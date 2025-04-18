@@ -1,0 +1,6 @@
+.vscode/
+*.o
+/rasterizer
+libmlx.a
+Dragon_2.obj
+.DS_Store
