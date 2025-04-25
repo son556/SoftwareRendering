@@ -43,14 +43,14 @@ inline Vertex	toNDC(Vertex const& clip_space) {
 }
 
 static
-inline Vector4	toScreenSpace(Vector4 a, int width, int height) {
+Vector4	toScreenSpace(Vector4 a, int width, int height) {
 	a.x = (a.x * 0.5f + 0.5f) * width + 0.5f;
 	a.y = (-a.y * 0.5f + 0.5f) * height + 0.5f;
 	return (a);
 }
 
 static
-inline float	cross(Vector4& a, Vector4& b, Vector4& c) {
+float	cross(Vector4 const& a, Vector4 const& b, Vector4 const& c) {
 	return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 }
 
@@ -105,9 +105,10 @@ void Rasterizer::drawTriangle(Vertex& a, Vertex& b, Vertex& c, Shader* shader)
 	
 	float area = cross(screen_a, screen_b, screen_c);
 	
+	
 	// 뒷면 제거
-	/*if (area > 0)
-		return;*/
+	if (area < 0)
+		return;
 
 	float rwa = a.pos.w;
 	float rwb = b.pos.w;
@@ -118,9 +119,9 @@ void Rasterizer::drawTriangle(Vertex& a, Vertex& b, Vertex& c, Shader* shader)
 			Vector4	p(x, y, 0, 1);
 			float	u = cross(screen_b, screen_c, p) / area;
 			float	v = cross(screen_c, screen_a, p) / area;
-			float	w = -u - v + 1.0f;
+			float	w = cross(screen_a, screen_b, p) / area;
 
-			if (u < 0 || v < 0 || w < 0)
+			if (u * area < 0 || v * area < 0 || w * area < 0)
 				continue;
 			float rw_sum = u * rwa + v * rwb + w * rwc;
 			u = u * rwa / rw_sum;
@@ -128,7 +129,7 @@ void Rasterizer::drawTriangle(Vertex& a, Vertex& b, Vertex& c, Shader* shader)
 			w = w * rwc / rw_sum;
 
 			Vertex	fragment = Vertex::mix(a, b, c, u, v, w);
-			if (u < 0 || v < 0 || w <= 0)
+			if (u * area < 0 || v * area < 0 || w * area <= 0)
 				continue;
 			if (!this->depthTest(x, y, fragment))
 				continue;

@@ -52,14 +52,18 @@ void Mesh::setTestTriangle()
 	this->vertices = new Vertex[3];
 	this->size = 3;
 
-	this->vertices[0].pos = Vector4(0, sqrtf(3) * (2.f / 3.f), 0, 1);
+	this->vertices[0].pos = Vector4(0, sqrtf(3) * (2.f / 3.f), 1, 1);
 	this->vertices[0].normal = Vector4(1, 0, 0, 0);
 	
-	this->vertices[1].pos = Vector4(-1, -sqrtf(3) * (1.f / 3.f), 0, 1);
+	this->vertices[1].pos = Vector4(-1, -sqrtf(3) * (1.f / 3.f), 1, 1);
 	this->vertices[1].normal = Vector4(0, 1, 0, 0);
 
-	this->vertices[2].pos = Vector4(1, -sqrtf(3) * (1.f / 3.f), 0, 1);
+	this->vertices[2].pos = Vector4(1, -sqrtf(3) * (1.f / 3.f), 1, 1);
 	this->vertices[2].normal = Vector4(0, 0, 1, 0);
+
+	Quaternion q(Vector3(1, 0, 0), 0);
+	for (int i = 0; i < 3; i++)
+		this->get(i).pos = q * this->get(i).pos;
 }
 
 void Mesh::setTestOverlapVertices()

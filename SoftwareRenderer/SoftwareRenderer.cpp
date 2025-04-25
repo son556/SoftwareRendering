@@ -60,12 +60,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     Matrix4x4 projection;
     Matrix4x4 tmpModel;
     Shader shader;
-    string o_dragon = "./resources/dragon.obj";
-    string o_skull = "./resources/skull.obj";
-    string o_teapot = "./resources/teapot.obj";
-    ParsingFile file(o_dragon);
     
-    cout << "pasring finish" << endl;
+    bool mesh_flag = true;
+    
 
     RECT client_rect;
     GetClientRect(hWnd, &client_rect);
@@ -73,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     int height = client_rect.bottom - 1;
     float ratio = static_cast<float>(width) / static_cast<float>(height);
     MatrixUtils::modelMatrix(tmpModel, Vector3(0, 0, 0), 
-        Quaternion(Vector3(0, 1, 0), 0), Vector3(1, 1, 1));
+        Quaternion(Vector3(1, 0, 0), 0), Vector3(1, 1, 1));
     MatrixUtils::perspectiveMatrix(projection, 60, ratio, 0.1, 500);
     MatrixUtils::viewMatrix(view, Vector3(0, 5, -13), Vector3(0, 0, 1));
     shader.setModelMatrix(tmpModel);
@@ -84,19 +81,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     RenderTexture render_target(width, height);
     Rasterizer rasterizer(width, height);
     rasterizer.setTarget(&render_target);
-    Mesh mesh(file.getTrianglesSize());
-
-    /*for (int i = 0; i < file.getTrianglesSize(); i++)
-        mesh.get(i) = file.getTrianglesFactor(i);*/
     
+    if (mesh_flag)
     {
+        string o_dragon = "./resources/dragon.obj";
+        ParsingFile file(o_dragon);
+        cout << "pasring finish" << endl;
+
+        Mesh mesh(file.getTrianglesSize());
+        for (int i = 0; i < file.getTrianglesSize(); i++)
+            mesh.get(i) = file.getTrianglesFactor(i);
+        rasterizer.draw(mesh, mesh.getSize(), &shader, &clipper);
+    }
+    else
+    { // test code
+        Mesh mesh(5);
         MatrixUtils::viewMatrix(view, Vector3(0, 0, -3), Vector3(0, 0, 1));
         shader.setViewMatrix(view);
-        mesh.setTestVertices();
-        //mesh.setTestTriangle();
+        //mesh.setTestVertices();
+        mesh.setTestTriangle();
         //mesh.setTestOverlapVertices();
+        rasterizer.draw(mesh, mesh.getSize(), &shader, &clipper);
     }
-    rasterizer.draw(mesh, mesh.getSize(), &shader, &clipper);
 
     hdc = GetDC(hWnd);
     for (int y = 0; y < height; y++) {

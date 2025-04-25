@@ -56,11 +56,9 @@ void Shader::vertex(Vertex const& in, Vertex& out)
 
 void Shader::fragment(Vertex const& in, Vector4& color)
 {
-	Vector4 c = in.normal.normalized();
+	Vector4 c = in.normal;
 	float f = c * Vector4(0, 0, -1, 0);
-	//color = Vector4(1, 1, 1, 0) * f;
-	color = Vector4(c.x * 0.5 + 0.5, c.y * 0.5 + 0.5, c.z * 0.5 + 0.5, -1);
-	color = c;
-	//test
-	//color = color + Vector4(0.2, 0.2, 0.2, 0);
+	color = Vector4(1, 1, 1, 0) * f;
+	//color = Vector4(c.x * 0.5 + 0.5, c.y * 0.5 + 0.5, c.z * 0.5 + 0.5, -1);
+	//color = in.normal;
 }
